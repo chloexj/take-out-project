@@ -53,7 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //密码比对
 
         //encrypt password from front end
-       password = DigestUtils.md5DigestAsHex(password.getBytes());
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
@@ -71,15 +71,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     //create new employee
     @Override
     public void create(EmployeeDTO employeeDTO) {
-        System.out.println("Current thread id:"+Thread.currentThread().getId());
-        Employee employee=new Employee();
+        System.out.println("Current thread id:" + Thread.currentThread().getId());
+        Employee employee = new Employee();
         //copy properties from DTO object to entity
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         //set account's status
         employee.setStatus(StatusConstant.ENABLE);
         //set password
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-    //set time
+        //set time
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
         //set id who create this
@@ -92,12 +92,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
-        Page<Employee> page=employeeMapper.pageQuery(employeePageQueryDTO);
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
         long total = page.getTotal();
         List<Employee> records = page.getResult();
 
-        return new PageResult(total,records);
+        return new PageResult(total, records);
+    }
+
+    //Change employee status
+    @Override
+    public void changeStatus(Integer status, Long id) {
+        Employee employee= Employee.builder()
+                .status(status)
+                .id(id).build();
+        employeeMapper.update(employee);
     }
 
 }

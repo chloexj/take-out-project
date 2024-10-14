@@ -94,4 +94,13 @@ PageResult pageResult=employeeService.pageQuery(employeePageQueryDTO);
 return Result.success(pageResult);
 
     }
+
+    //非查询类就不用泛型了
+    @PostMapping("/status/{status}")
+    @ApiOperation("Change employee status")
+    public Result changeStatus(@PathVariable Integer status, Long id){
+        log.info("Change employee status:{},{}",status,id);
+        employeeService.changeStatus(status,id);
+        return Result.success();
+    }
 }
