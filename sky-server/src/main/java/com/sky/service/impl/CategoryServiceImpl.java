@@ -42,8 +42,7 @@ private SetMapper setMapper;
     public void updateInfo(CategoryDTO categoryDTO) {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO, category);
-        category.setUpdateTime(LocalDateTime.now());
-        category.setUpdateUser(BaseContext.getCurrentId());
+
         categoryMapper.update(category);
     }
 
@@ -51,8 +50,7 @@ private SetMapper setMapper;
     @Override
     public void updateStatus(Integer status, Long id) {
         Category category =
-                Category.builder().status(status).id(id).updateTime(LocalDateTime.now())
-                        .updateUser(BaseContext.getCurrentId()).build();
+                Category.builder().status(status).id(id).build();
         categoryMapper.update(category);
     }
 
@@ -61,9 +59,6 @@ private SetMapper setMapper;
 
         Category category =
                 Category.builder().updateTime(LocalDateTime.now())
-                        .updateUser(BaseContext.getCurrentId())
-                        .createTime(LocalDateTime.now())
-                        .createUser(BaseContext.getCurrentId())
                         .status(0)
                         .build();
         BeanUtils.copyProperties(categoryDTO, category);
