@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.events.Event;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,4 +104,20 @@ return Result.success(pageResult);
         employeeService.changeStatus(status,id);
         return Result.success();
     }
+//Get employee info by ID
+    @GetMapping("/{id}")
+    @ApiOperation("Get employee info by ID")
+    public Result<Employee> getById(@PathVariable Long id){
+       Employee employee= employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    //update employee info
+   @PutMapping
+@ApiOperation("Update employee info")
+    public Result updateEmp(@RequestBody EmployeeDTO employeeDTO){
+        log.info("Update employee info:{}",employeeDTO);
+        employeeService.update(employeeDTO);
+        return Result.success();
+   }
 }

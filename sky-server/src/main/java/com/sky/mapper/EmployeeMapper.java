@@ -25,8 +25,13 @@ public interface EmployeeMapper {
             " (#{name},#{username},#{password},#{phone},#{sex},#{idNumber},#{createTime},#{updateTime},#{createUser},#{updateUser})")
     void insert(Employee employee);
 
+    //paging query
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
-
+//update employee info
     void update(Employee employee);
+
+    //get employee info by id
+@Select("select *from employee where id =#{id}")
+    Employee getById(Long id);
 }
