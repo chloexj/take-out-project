@@ -49,13 +49,7 @@ public class DishController {
         return Result.success();
     }
 
-    @GetMapping("/{id}")
-    @ApiOperation("Get dish by id")
-    public Result<DishVO> getById(@PathVariable Long id) {
-        log.info("get dish by id:{}", id);
-        DishVO dishVO = dishService.getByIdWithFlavor(id);
-        return Result.success(dishVO);
-    }
+
 
     @PostMapping("/status/{status}")
     @ApiOperation("Update status")
@@ -72,5 +66,17 @@ public class DishController {
     dishService.update(dishDTO);
         return Result.success();
     }
+    @GetMapping("/{id}")
+    @ApiOperation("Get dish by id")
+    public Result<DishVO> getById(@PathVariable Long id) {
+        log.info("get dish by id:{}", id);
+        DishVO dishVO = dishService.getByIdWithFlavor(id);
+        return Result.success(dishVO);
+    }
+@GetMapping("/list")
+    public Result<List<DishVO>> getByCategoryId(Integer categoryId){
+     List<DishVO> list=  dishService.getByCategoryId(categoryId);
+        return Result.success(list);
+}
 
 }

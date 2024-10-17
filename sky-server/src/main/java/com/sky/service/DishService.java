@@ -19,4 +19,6 @@ public interface DishService {
     void updateStatus(Integer status, Long id);
 
     void update(DishDTO dishDTO);
+
+   List<DishVO> getByCategoryId(Integer categoryId);
 }
