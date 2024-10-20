@@ -5,12 +5,16 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetService;
+import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Api(tags = "Set related")
@@ -35,5 +39,19 @@ public class SetController {
         return Result.success();
 }
 
+@GetMapping("/{id}")
+@ApiOperation("Set meal get by id")
+public Result<SetmealVO> getById(@PathVariable Long id) {
+    SetmealVO setmealVO = setService.getBySetId(id);
+    return Result.success(setmealVO);
+}
+
+    @DeleteMapping
+    @ApiOperation("Setmeal dish batch delete function")
+    public Result deleteByIds(@RequestParam List<Long> ids){
+        log.info("batch delete function:{}",ids);
+        setService.deleteByIds(ids);
+        return Result.success();
+    }
 
 }
