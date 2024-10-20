@@ -27,4 +27,7 @@ public interface SetMapper {
 
 
     void deleteBatch(List<Long> ids);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }

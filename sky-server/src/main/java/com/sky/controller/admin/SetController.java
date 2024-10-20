@@ -53,5 +53,11 @@ public Result<SetmealVO> getById(@PathVariable Long id) {
         setService.deleteByIds(ids);
         return Result.success();
     }
-
+@PutMapping
+@ApiOperation("update setmeal function")
+    public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO){
+        log.info("update setmeal:{}",setmealDTO);
+        setService.update(setmealDTO);
+        return Result.success();
+}
 }

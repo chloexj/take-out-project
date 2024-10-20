@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -78,5 +79,21 @@ public class SetServiceImpl implements SetService {
         List<SetmealDish> setmealDishes = setDishMapper.getBySetmealId(id);
         setmealVO.setSetmealDishes(setmealDishes);
         return setmealVO;
+    }
+
+    @Override
+    @Transactional
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal=new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        setMapper.update(setmeal);
+        //还要把setmeal_dish的表删掉再导
+        Long setmealId = setmealDTO.getId();
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
+        //删掉setmeal_dish中关联了ID的数据
+        setDishMapper.deleteBatch(Collections.singletonList(setmealId));
+        //再导入
+        setDishMapper.insert(setmealDishes);
     }
 }
