@@ -60,4 +60,11 @@ public Result<SetmealVO> getById(@PathVariable Long id) {
         setService.update(setmealDTO);
         return Result.success();
 }
+@PostMapping("/status/{status}")
+@ApiOperation("update status")
+public Result updateStatus(@PathVariable Integer status, Long id){
+        log.info("Update Status:{},{}",status,id);
+setService.updateStatus(status,id);
+return Result.success();
+    }
 }

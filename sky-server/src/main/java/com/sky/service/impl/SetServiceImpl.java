@@ -96,4 +96,10 @@ public class SetServiceImpl implements SetService {
         //再导入
         setDishMapper.insert(setmealDishes);
     }
+
+    @Override
+    public void updateStatus(Integer status, Long id) {
+        Setmeal setmeal=Setmeal.builder().id(id).status(status).build();
+        setMapper.update(setmeal);
+    }
 }
