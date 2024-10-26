@@ -13,6 +13,7 @@ import com.sky.mapper.SetDishMapper;
 import com.sky.mapper.SetMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -101,5 +102,13 @@ public class SetServiceImpl implements SetService {
     public void updateStatus(Integer status, Long id) {
         Setmeal setmeal=Setmeal.builder().id(id).status(status).build();
         setMapper.update(setmeal);
+    }
+
+    public List<Setmeal> list(Setmeal setmeal) {
+        List<Setmeal> list = setMapper.list(setmeal);
+        return list;
+    }
+    public List<DishItemVO> getDishItemById(Long id) {
+        return setMapper.getDishItemBySetmealId(id);
     }
 }

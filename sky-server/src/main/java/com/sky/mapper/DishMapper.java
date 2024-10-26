@@ -31,5 +31,5 @@ public interface DishMapper {
     void update(Dish dish);
 
 
-    List<DishVO> getByCategoryId(Dish dish);
+    List<Dish> getByCategoryId(Dish dish);
 }
