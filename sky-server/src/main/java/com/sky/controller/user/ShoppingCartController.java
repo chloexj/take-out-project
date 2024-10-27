@@ -28,6 +28,12 @@ public class ShoppingCartController {
         return Result.success();
 
     }
+    @PostMapping("/sub")
+    @ApiOperation("sub from shopping cart")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO){
+        shoppingCartService.subShoppingCart(shoppingCartDTO);
+        return Result.success();
+    }
 
     @GetMapping("/list")
     @ApiOperation("Check shoppingcart")

@@ -8,6 +8,7 @@ import com.sky.entity.ShoppingCart;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.Result;
 import com.sky.service.ShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -85,4 +86,26 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void cleanShoppingCart() {
         shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());
     }
+
+    @Override
+    public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+    ShoppingCart shoppingCart=ShoppingCart.builder().userId(BaseContext.getCurrentId()).build();
+    BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+    //查询数量
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        shoppingCart = list.get(0);
+        Integer num=shoppingCart.getNumber();
+
+        if(num==1) {
+        //如果菜品数量是1的话，直接删掉
+        shoppingCartMapper.deleteByShoppingCart(shoppingCart.getId());
+    }else {
+          num=num-1;
+            shoppingCart.setNumber(num);
+        //如果菜品数量大于1的话 更新数据
+shoppingCartMapper.updateNumberById(shoppingCart);
+    }
+    }
+
+
 }
