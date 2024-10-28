@@ -1,8 +1,11 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -14,6 +17,7 @@ import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
@@ -22,9 +26,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -123,4 +129,37 @@ orderVO.setOrderDetailList(list);
 orderVO.setOrderDishes(orderDishes);
         return orderVO;
     }
+
+    @Override
+    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
+// 此处要额外传一个orderDishes，而且还要搭配list，所以result和总条数拆开
+        List<OrderVO> list=new ArrayList<>();
+        List<Orders> orders = page.getResult();
+        if(!CollectionUtils.isEmpty(orders)){
+            for (Orders order : orders) {
+                //将每一条orders复制到orderVO
+                OrderVO orderVO=new OrderVO();
+                BeanUtils.copyProperties(order,orderVO);
+       //增加orderDishes信息
+                Long ordersId = order.getId();
+                List<OrderDetail> detailsLists= orderDetailMapper.getByOrdersId(ordersId);
+                //得到订单菜品信息
+                StringBuilder sb=new StringBuilder();
+                for (OrderDetail detailsList : detailsLists) {
+                    sb.append(detailsList.getName()+"*"+detailsList.getNumber()+";");
+                }
+                String orderDishes = sb.toString();
+                orderVO.setOrderDishes(orderDishes);
+
+                //加到list中
+                list.add(orderVO);
+            }
+        }
+
+
+        return new PageResult(page.getTotal(),list);
+    }
+
 }
