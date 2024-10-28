@@ -4,13 +4,11 @@ import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/order")
@@ -25,6 +23,11 @@ private OrderService orderService;
 log.info("Cancel order:{}",ordersCancelDTO);
 orderService.cancelOrder(ordersCancelDTO);
         return Result.success();
+    }
+    @GetMapping("/details/{id}")
+    public Result<OrderVO> checkOrders(@PathVariable Long id){
+OrderVO orderVO= orderService.getById(id);
+return Result.success(orderVO);
     }
 
 

@@ -16,6 +16,8 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,5 +98,29 @@ public class OrderServiceImpl implements OrderService {
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
 
+    }
+
+    @Override
+    public OrderVO getById(Long id) {
+
+        //查Order表
+        Orders orders= orderMapper.getById(id);
+        //查order detail 表
+        //可以多表联查哈 不能多表联查，因为返回的是LIST
+        Long ordersId = orders.getId();
+        List<OrderDetail> list= orderDetailMapper.getByOrdersId(ordersId);
+        //得到订单菜品信息
+        StringBuilder sb=new StringBuilder();
+        for (OrderDetail orderDetail : list) {
+            sb.append(orderDetail.getName()+"*"+orderDetail.getNumber()+";");
+        }
+        String orderDishes = sb.toString();
+
+        //把上面三个搞到要传递的VO类里去
+        OrderVO orderVO=new OrderVO();
+BeanUtils.copyProperties(orders,orderVO);
+orderVO.setOrderDetailList(list);
+orderVO.setOrderDishes(orderDishes);
+        return orderVO;
     }
 }
