@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -83,5 +84,17 @@ public class OrderServiceImpl implements OrderService {
             .orderAmount(orders.getAmount())
             .build();
         return orderSubmitVO;
+    }
+
+    @Override
+    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        //更新订单表的状态： 订单id, cancelReason
+        //1. status, 2. cancelResason
+        Orders orders =new Orders();
+        BeanUtils.copyProperties(ordersCancelDTO,orders);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+
     }
 }
