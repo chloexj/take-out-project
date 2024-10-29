@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
@@ -20,9 +21,9 @@ public class OrderController {
 @Autowired
 private OrderService orderService;
     //cancel order
-@PostMapping("/cancel")
+@PutMapping("/cancel")
     public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO){
-log.info("Cancel order:{}",ordersCancelDTO);
+    log.info("Cancel order:{}",ordersCancelDTO);
 orderService.cancelOrder(ordersCancelDTO);
         return Result.success();
     }
@@ -37,8 +38,15 @@ log.info("Order page query:{}",ordersPageQueryDTO);
 PageResult pageResult = orderService.pageQuery(ordersPageQueryDTO);
 return Result.success(pageResult);
 
-
 }
+
+    @PutMapping("/confirm")
+    public Result confirmOrder(@RequestBody OrdersConfirmDTO ordersConfirmDTO){
+   orderService.confirmOrder(ordersConfirmDTO);
+
+
+    return Result.success();
+    }
 
 
 }

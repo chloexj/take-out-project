@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
@@ -21,6 +22,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +30,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
@@ -71,6 +75,8 @@ public class OrderServiceImpl implements OrderService {
         orders.setNumber(String.valueOf(System.currentTimeMillis()));
         orders.setConsignee(addressBook.getConsignee());
         orders.setUserId(userId);
+        orders.setPhone(addressBook.getPhone());
+        orders.setAddress(addressBook.getDetail());
 
         orderMapper.insert(orders);
 //3.向订单明细表插入多条数据
@@ -96,6 +102,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == 1) {
+            //用户已支付，需要退款
+//            String refund = weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal(0.01),
+//                    new BigDecimal(0.01));
+            log.info("申请退款,但是没做支付功能哈，所以没有内容");
+        }
+
         //更新订单表的状态： 订单id, cancelReason
         //1. status, 2. cancelResason
         Orders orders =new Orders();
@@ -103,6 +124,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
+        //此处还应该有退款语句啊，但是没做支付模块，就不管他了
 
     }
 
@@ -160,6 +182,20 @@ Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
 
 
         return new PageResult(page.getTotal(),list);
+    }
+
+    @Override
+    public void confirmOrder( OrdersConfirmDTO ordersConfirmDTO) {
+        //更新订单表的状态： 订单id, cancelReason
+        //1. status, 2. cancelResason
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersConfirmDTO,orders);
+
+        orders.setStatus(Orders.CONFIRMED);
+
+
+        orderMapper.update(orders);
+
     }
 
 }
