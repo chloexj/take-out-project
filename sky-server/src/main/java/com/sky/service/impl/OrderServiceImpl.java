@@ -4,15 +4,13 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
+import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
@@ -20,6 +18,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -107,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
 
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if (payStatus == 1) {
+        if (payStatus == Orders.PAID) {
             //用户已支付，需要退款
 //            String refund = weChatPayUtil.refund(
 //                    ordersDB.getNumber(),
@@ -196,6 +195,53 @@ Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
 
         orderMapper.update(orders);
 
+    }
+
+    @Override
+    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
+
+        // 订单只有存在且状态为2（待接单）才可以拒单
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == Orders.PAID) {
+//            //用户已支付，需要退款
+//            String refund = weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal(0.01),
+//                    new BigDecimal(0.01));
+            log.info("申请退款,但是没做支付功能哈，所以没有内容");
+        }
+        //此处还应该有退款语句啊，但是没做支付模块，就不管他了
+        //更新订单表的状态： 订单id, cancelReason
+        //1. status, 2. cancelResason
+        Orders orders =new Orders();
+        BeanUtils.copyProperties(ordersRejectionDTO,orders);
+        orders.setStatus(Orders.CANCELLED);
+//        orders.setId(ordersRejectionDTO.getId());
+//        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setCancelTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+
+    }
+
+    @Override
+    public OrderStatisticsVO getStatistics() {
+    Integer confirmed=  orderMapper.getStatistics(Orders.CONFIRMED);
+    Integer deliveryInProgress=  orderMapper.getStatistics(Orders.DELIVERY_IN_PROGRESS);
+    Integer toBeConfirmed=  orderMapper.getStatistics(Orders.TO_BE_CONFIRMED);
+   OrderStatisticsVO orderStatisticsVO= new OrderStatisticsVO();
+   orderStatisticsVO.setConfirmed(confirmed);
+   orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+   orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+
+        return orderStatisticsVO;
     }
 
 }
