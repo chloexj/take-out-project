@@ -1,12 +1,11 @@
 package com.sky.controller.admin;
 
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
+import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +46,16 @@ return Result.success(pageResult);
 
     return Result.success();
     }
+    @PutMapping("/rejection")
+    public Result rejectOrder(@RequestBody OrdersRejectionDTO ordersRejectionDTO){
+    orderService.rejectOrder(ordersRejectionDTO);
+    return Result.success();
+    }
 
+    @GetMapping("/statistics")
+    public Result<OrderStatisticsVO> statisticsOrders(){
+        OrderStatisticsVO orderStatisticsVO=orderService.getStatistics();
+return Result.success(orderStatisticsVO);
+}
 
 }
