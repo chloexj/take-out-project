@@ -57,5 +57,11 @@ return Result.success(pageResult);
         OrderStatisticsVO orderStatisticsVO=orderService.getStatistics();
 return Result.success(orderStatisticsVO);
 }
+@PutMapping("/complete/{id}")
+public Result completeOrder(@PathVariable Long id){
+    orderService.completeOrder(id);
+    return Result.success();
+}
+
 
 }

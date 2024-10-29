@@ -20,4 +20,6 @@ public interface OrderService {
     void rejectOrder(OrdersRejectionDTO ordersRejectionDTO);
 
     OrderStatisticsVO getStatistics();
+
+    void completeOrder(Long id);
 }

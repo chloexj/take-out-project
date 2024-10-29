@@ -244,4 +244,12 @@ Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
         return orderStatisticsVO;
     }
 
+    @Override
+    public void completeOrder(Long id) {
+      Orders orders=  Orders.builder().id(id).build();
+        orders.setStatus(Orders.COMPLETED);
+        orders.setDeliveryTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
 }
