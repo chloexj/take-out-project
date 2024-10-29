@@ -27,4 +27,8 @@ public interface OrderService {
     void completeOrder(Long id);
 
     void deliverOrder(Long id);
+
+ void cancelOrder4User(Long id);
+
+ void repeatOrder(Long id);
 }

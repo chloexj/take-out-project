@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -191,8 +192,10 @@ ordersPageQueryDTO.setStatus(status);
         Orders orders= orderMapper.getById(id);
         //查order detail 表
         //可以多表联查哈 不能多表联查，因为返回的是LIST
-        Long ordersId = orders.getId();
-        List<OrderDetail> list= orderDetailMapper.getByOrdersId(ordersId);
+//        Long ordersId = orders.getId();
+        //不是 getID当时这么写是有啥意义啊， 这不就是传进来的Long id吗我请问，我给删了试试。。。
+        //无语了，注释掉后完全没影响，无效语句啊。。。
+        List<OrderDetail> list= orderDetailMapper.getByOrdersId(id);
         //得到订单菜品信息
         StringBuilder sb=new StringBuilder();
         for (OrderDetail orderDetail : list) {
@@ -285,6 +288,37 @@ orderVO.setOrderDishes(orderDishes);
         orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
 
         orderMapper.update(orders);
+    }
+
+    @Override
+    public void cancelOrder4User(Long id) {
+        Orders orders = orderMapper.getById(id);
+        Integer status = orders.getStatus();
+        if(status>2){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+//此处应有退款语句
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("User canceled the order");
+        orders.setCancelTime(LocalDateTime.now());
+orderMapper.update(orders);
+    }
+
+    @Override
+    public void repeatOrder(Long id) {
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrdersId(id);
+
+      List<ShoppingCart> shoppingCartsList=  orderDetailList.stream().map(s->{
+            ShoppingCart shoppingCart=new ShoppingCart();
+            BeanUtils.copyProperties(s,shoppingCart,"id");
+            shoppingCart.setUserId(BaseContext.getCurrentId());
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+
+        //然后把这个orders放进购物车
+
+        shoppingCartMapper.insertBatch(shoppingCartsList);
     }
 
 }

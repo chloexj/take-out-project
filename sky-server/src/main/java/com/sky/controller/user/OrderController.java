@@ -7,6 +7,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -37,5 +38,22 @@ public class OrderController {
         return Result.success(pageRes);
     }
 
+@GetMapping("/orderDetail/{id}")
+    public Result<OrderVO> getByOrderId(@PathVariable Long id){
+    OrderVO orderVO = orderService.getById(id);
 
+    return Result.success(orderVO);
+}
+
+@PutMapping("/cancel/{id}")
+    public Result cancelOrder(@PathVariable Long id){
+        orderService.cancelOrder4User(id);
+        return Result.success();
+}
+
+@PostMapping("/repetition/{id}")
+    public Result repeatOrder(@PathVariable Long id){
+        orderService.repeatOrder(id);
+        return null;
+}
 }
