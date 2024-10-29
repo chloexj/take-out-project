@@ -46,6 +46,63 @@ public class OrderServiceImpl implements OrderService {
     private AddressBookMapper addressBookMapper;
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
+    @Override
+    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+        Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
+// 此处要额外传一个orderDishes，而且还要搭配list，所以result和总条数拆开
+        List<OrderVO> list=new ArrayList<>();
+        List<Orders> orders = page.getResult();
+        if(!CollectionUtils.isEmpty(orders)){
+            for (Orders order : orders) {
+                //将每一条orders复制到orderVO
+                OrderVO orderVO=new OrderVO();
+                BeanUtils.copyProperties(order,orderVO);
+                //增加orderDishes信息
+                Long ordersId = order.getId();
+                List<OrderDetail> detailsLists= orderDetailMapper.getByOrdersId(ordersId);
+                //得到订单菜品信息
+                StringBuilder sb=new StringBuilder();
+                for (OrderDetail detailsList : detailsLists) {
+                    sb.append(detailsList.getName()+"*"+detailsList.getNumber()+";");
+                }
+                String orderDishes = sb.toString();
+                orderVO.setOrderDishes(orderDishes);
+
+                //加到list中
+                list.add(orderVO);
+            }
+        }
+
+
+        return new PageResult(page.getTotal(),list);
+    }
+
+    @Override
+    public PageResult pageQueryUser(Integer page, Integer pageSize, Integer status) {
+PageHelper.startPage(page,pageSize);
+OrdersPageQueryDTO ordersPageQueryDTO=new OrdersPageQueryDTO();
+
+ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+ordersPageQueryDTO.setStatus(status);
+
+        Page<Orders> pagesOrder = orderMapper.pageQuery(ordersPageQueryDTO);
+        //还有个List<OrderVO>
+        List<OrderVO> list=new ArrayList<>();
+
+        for (Orders orders : pagesOrder) {
+            Long ordersIdid = orders.getId();
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrdersId(ordersIdid);
+        OrderVO orderVO=new OrderVO();
+        BeanUtils.copyProperties(orders,orderVO);
+        orderVO.setOrderDetailList(orderDetailList);
+
+        list.add(orderVO);
+        }
+
+        return new PageResult(pagesOrder.getTotal(),list);
+
+    }
 
     @Override
     @Transactional
@@ -151,37 +208,7 @@ orderVO.setOrderDishes(orderDishes);
         return orderVO;
     }
 
-    @Override
-    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
-Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
-// 此处要额外传一个orderDishes，而且还要搭配list，所以result和总条数拆开
-        List<OrderVO> list=new ArrayList<>();
-        List<Orders> orders = page.getResult();
-        if(!CollectionUtils.isEmpty(orders)){
-            for (Orders order : orders) {
-                //将每一条orders复制到orderVO
-                OrderVO orderVO=new OrderVO();
-                BeanUtils.copyProperties(order,orderVO);
-       //增加orderDishes信息
-                Long ordersId = order.getId();
-                List<OrderDetail> detailsLists= orderDetailMapper.getByOrdersId(ordersId);
-                //得到订单菜品信息
-                StringBuilder sb=new StringBuilder();
-                for (OrderDetail detailsList : detailsLists) {
-                    sb.append(detailsList.getName()+"*"+detailsList.getNumber()+";");
-                }
-                String orderDishes = sb.toString();
-                orderVO.setOrderDishes(orderDishes);
 
-                //加到list中
-                list.add(orderVO);
-            }
-        }
-
-
-        return new PageResult(page.getTotal(),list);
-    }
 
     @Override
     public void confirmOrder( OrdersConfirmDTO ordersConfirmDTO) {
@@ -249,6 +276,14 @@ Page<Orders> page=orderMapper.pageQuery(ordersPageQueryDTO);
       Orders orders=  Orders.builder().id(id).build();
         orders.setStatus(Orders.COMPLETED);
         orders.setDeliveryTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
+    @Override
+    public void deliverOrder(Long id) {
+        Orders orders=  Orders.builder().id(id).build();
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+
         orderMapper.update(orders);
     }
 

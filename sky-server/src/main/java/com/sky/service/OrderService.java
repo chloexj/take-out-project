@@ -1,5 +1,6 @@
 package com.sky.service;
 
+import com.github.pagehelper.Page;
 import com.sky.dto.*;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderStatisticsVO;
@@ -7,6 +8,8 @@ import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 
 public interface OrderService {
+   PageResult pageQueryUser(Integer page, Integer pageSize, Integer status);
+
     OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO);
 
     void cancelOrder(OrdersCancelDTO ordersCancelDTO);
@@ -22,4 +25,6 @@ public interface OrderService {
     OrderStatisticsVO getStatistics();
 
     void completeOrder(Long id);
+
+    void deliverOrder(Long id);
 }

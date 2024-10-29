@@ -1,6 +1,9 @@
 package com.sky.controller.user;
 
+import com.github.pagehelper.Page;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.mapper.OrderMapper;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
@@ -25,6 +28,13 @@ public class OrderController {
       OrderSubmitVO orderSubmitVO= orderService.submitOrder(ordersSubmitDTO);
 
         return Result.success(orderSubmitVO);
+    }
+
+    @GetMapping("/historyOrders")
+    public  Result<PageResult> pageQuery(int page, int pageSize, Integer status){
+      PageResult pageRes = orderService.pageQueryUser(page,pageSize,status);
+
+        return Result.success(pageRes);
     }
 
 

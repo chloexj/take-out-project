@@ -63,5 +63,11 @@ public Result completeOrder(@PathVariable Long id){
     return Result.success();
 }
 
+@PutMapping("delivery/{id}")
+    public Result deliverOrder(@PathVariable Long id){
+    orderService.deliverOrder(id);
+    return Result.success();
+}
+
 
 }
