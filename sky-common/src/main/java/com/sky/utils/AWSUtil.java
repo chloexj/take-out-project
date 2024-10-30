@@ -44,11 +44,12 @@ public class AWSUtil {
         } catch (SdkClientException e) {
             System.out.println("有异常。。。SdkClientException");
             throw new RuntimeException(e);
-        } finally {
-            // 关闭客户端
-            s3Client.close();
-
         }
+            //        } finally {
+////            // 关闭客户端
+////            s3Client.close();
+//
+//        }
 //https://s3.us-east-1.amazonaws.com/com.chloe.testaws/2.png
         StringBuilder stringBuilder = new StringBuilder("https://s3.");
         stringBuilder
