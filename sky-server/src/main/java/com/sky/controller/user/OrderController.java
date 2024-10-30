@@ -56,4 +56,10 @@ public class OrderController {
         orderService.repeatOrder(id);
         return null;
 }
+
+@GetMapping("/reminder/{id}")
+    public Result pushOrder(@PathVariable Long id){
+        log.info("User {} is pushing the order",id);
+        return Result.success();
+}
 }

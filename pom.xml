@@ -13,7 +13,6 @@
     <module>sky-common</module>
     <module>sky-pojo</module>
     <module>sky-server</module>
-    <module>getstarted</module>
   </modules>
   <properties>
     <mybatis.spring>2.2.0</mybatis.spring>

@@ -1,9 +1,8 @@
 package com.sky.controller.admin;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sky.constant.MessageConstant;
 import com.sky.result.Result;
-import com.sky.utils.AliOssUtil;
+import com.sky.utils.AWSUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +20,10 @@ import java.util.UUID;
 @Api(tags = "Common api")
 @Slf4j
 public class CommonController {
-    @Autowired
-    private AliOssUtil aliOssUtil;
-
+//    @Autowired
+//    private AliOssUtil aliOssUtil;
+@Autowired
+private AWSUtil awsUtil;
     @PostMapping("/upload")
     @ApiOperation("File upload function")
     public Result<String> upload(MultipartFile file){
@@ -33,7 +33,8 @@ public class CommonController {
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String objectName = UUID.randomUUID().toString() + extension;
 
-            String filePath = aliOssUtil.upload(file.getBytes(), objectName);
+//            String filePath = aliOssUtil.upload(file.getBytes(), objectName);
+            String filePath = awsUtil.upload(file.getBytes(), objectName);
             return Result.success(filePath);
         } catch (IOException e) {
         log.info("Fail to upload file:{}",e);
