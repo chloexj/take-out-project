@@ -2,7 +2,10 @@ package com.sky.controller.admin;
 
 import com.sky.result.Result;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +31,29 @@ public Result<TurnoverReportVO> turnoverStatistics(
 log.info("Turnover statistics:{},{}",begin,end);
     return Result.success(reportService.getTurnoverStatistics(begin,end));
 }
+@GetMapping("/userStatistics")
+public Result<UserReportVO> userStatistics( @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+    log.info("user statistics:{},{}",begin,end);
+
+    return Result.success(reportService.getuserStatistics(begin,end));
+    }
+
+    @GetMapping("/ordersStatistics")
+    public Result<OrderReportVO> ordersStatistics(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                                                           @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+        log.info("orders statistics:{},{}",begin,end);
+
+        return Result.success(reportService.getOrdersStatistics(begin,end));
+    }
+
+    @GetMapping("/top10")
+    public Result<SalesTop10ReportVO> topTen(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+        log.info("top 10 statistics:{},{}",begin,end);
+
+        return Result.success(reportService.getTop10Statistics(begin,end));
+    }
+
+
 }
