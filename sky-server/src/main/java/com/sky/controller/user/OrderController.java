@@ -1,8 +1,6 @@
 package com.sky.controller.user;
 
-import com.github.pagehelper.Page;
 import com.sky.dto.OrdersSubmitDTO;
-import com.sky.mapper.OrderMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
@@ -12,8 +10,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController("userOrderController")
 @RequestMapping("/user/order")
@@ -58,8 +58,10 @@ public class OrderController {
 }
 
 @GetMapping("/reminder/{id}")
-    public Result pushOrder(@PathVariable Long id){
+    public Result reminder(@PathVariable Long id){
         log.info("User {} is pushing the order",id);
+        orderService.reminder(id);
+
         return Result.success();
 }
 }

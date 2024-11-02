@@ -1,6 +1,5 @@
 package com.sky.service;
 
-import com.github.pagehelper.Page;
 import com.sky.dto.*;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderStatisticsVO;
@@ -31,4 +30,6 @@ public interface OrderService {
  void cancelOrder4User(Long id);
 
  void repeatOrder(Long id);
+
+    void reminder(Long id);
 }
