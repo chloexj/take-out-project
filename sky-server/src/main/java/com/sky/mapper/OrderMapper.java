@@ -31,4 +31,7 @@ public interface OrderMapper {
     Integer countByMap(Map map);
 
     List<GoodsSalesDTO> getTop10(LocalDateTime begin, LocalDateTime end);
+
+@Select("select count(id) from orders where status=#{status}")
+    Integer getStatus(Integer status);
 }

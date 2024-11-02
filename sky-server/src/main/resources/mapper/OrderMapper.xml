@@ -111,5 +111,6 @@ where od.order_id=o.id and o.status=5
 
 
     </select>
+    <select id="unitPrice" resultType="java.lang.Double"></select>
 
 </mapper>
