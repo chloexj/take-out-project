@@ -30,10 +30,8 @@ private SetMapper setMapper;
 @Autowired
 private DishMapper dishMapper;
     @Override
-    public BusinessDataVO getBusinessData() {
-        LocalDate date = LocalDate.now();
-        LocalDateTime end = LocalDateTime.of(date, LocalTime.MAX);
-        LocalDateTime begin = LocalDateTime.of(date, LocalTime.MIN);
+    public BusinessDataVO getBusinessData(LocalDateTime begin,LocalDateTime end) {
+
         Map map=new HashMap();
         map.put("begin",begin);
         map.put("end",end);
@@ -48,10 +46,16 @@ private DishMapper dishMapper;
             orderCompletionRate=validOrder.doubleValue()/totalOrder;
         }
         //turnover
-        Double turnover = orderMapper.sumByMap(map);
+        Double turnover = 0.0;
+        Double turnoverPre=orderMapper.sumByMap(map);
+        if(turnoverPre!=null){
+            turnover = turnoverPre;
+        }
         //unit price
-        Double unitPrice=turnover/validOrder;
-
+        Double unitPrice=0.0;
+        if(turnover!=0) {
+           unitPrice = turnover / validOrder;
+        }
         return BusinessDataVO.builder().newUsers(newUser).orderCompletionRate(orderCompletionRate)
                 .turnover(turnover).unitPrice(unitPrice).validOrderCount(validOrder).build();
     }

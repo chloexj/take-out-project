@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @RestController
 @Slf4j
 @Api(tags = "workspace related api")
@@ -23,7 +27,10 @@ private WorkspaceService workspaceService;
     @GetMapping("/businessData")
     public Result<BusinessDataVO> getBusinessData(){
     log.info("Get today's business data");
-    BusinessDataVO businessDataVO= workspaceService.getBusinessData();
+        LocalDate date = LocalDate.now();
+        LocalDateTime end = LocalDateTime.of(date, LocalTime.MAX);
+        LocalDateTime begin = LocalDateTime.of(date, LocalTime.MIN);
+    BusinessDataVO businessDataVO= workspaceService.getBusinessData(begin,end);
     return Result.success(businessDataVO);
 }
 
