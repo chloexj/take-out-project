@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.yaml.snakeyaml.events.Event;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,8 +98,8 @@ return Result.success(pageResult);
     //非查询类就不用泛型了
     @PostMapping("/status/{status}")
     @ApiOperation("Change employee status")
-    public Result changeStatus(@PathVariable Integer status, Long id){
-        log.info("Change employee status:{},{}",status,id);
+    public Result changeStatus( @PathVariable Integer status,Long id){
+        log.info("Change employee status:{},{}",id,status);
         employeeService.changeStatus(status,id);
         return Result.success();
     }
